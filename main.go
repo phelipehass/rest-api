@@ -1,6 +1,7 @@
 package main
 
 import (
+	"../rest-api/model"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"log"
@@ -9,19 +10,12 @@ import (
 	"strconv"
 )
 
-type Task struct {
-	ID          int64  `json:"id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Description string `json:"description,omitempty"`
-	Isconcluded bool   `json:"isconcluded,omitempty"`
-}
-
-var listTasks []Task
+var listTasks []model.Task
 
 func main() {
-	listTasks = append(listTasks, Task{1, "Correr", "Corrida de 5km", false})
-	listTasks = append(listTasks, Task{2, "Fazer café", "Preparar o café da manhã", false})
-	listTasks = append(listTasks, Task{3, "Ler", "Fazer a leitura de um livro", false})
+	listTasks = append(listTasks, model.Task{1, "Correr", "Corrida de 5km", false})
+	listTasks = append(listTasks, model.Task{2, "Fazer café", "Preparar o café da manhã", false})
+	listTasks = append(listTasks, model.Task{3, "Ler", "Fazer a leitura de um livro", false})
 
 	router := mux.NewRouter()
 	router.HandleFunc("/tasks", GetTasks).Methods("GET")
@@ -48,7 +42,7 @@ func GetTaskById(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	json.NewEncoder(w).Encode(&Task{})
+	json.NewEncoder(w).Encode(&model.Task{})
 }
 
 func CreateTask(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +53,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var task Task
+	var task model.Task
 	_ = json.NewDecoder(r.Body).Decode(&task)
 	task.ID = idRequest
 	listTasks = append(listTasks, task)
