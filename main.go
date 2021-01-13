@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 )
 
@@ -36,7 +37,13 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 
 func GetTaskById(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	idRequest, err := strconv.ParseInt(params["ID"], 10, 64)
+	reString, err := regexp.Compile(`[^\w]`)
+	if err != nil {
+		log.Fatalf("Error in regex: %s", err.Error())
+	}
+	params["id"] = reString.ReplaceAllString(params["id"], "")
+
+	idRequest, err := strconv.ParseInt(params["id"], 10, 64)
 
 	if err != nil {
 		log.Fatalf("Error in ID parameter: %s", err.Error())
@@ -53,7 +60,7 @@ func GetTaskById(w http.ResponseWriter, r *http.Request) {
 
 func CreateTask(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	idRequest, err := strconv.ParseInt(params["ID"], 10, 64)
+	idRequest, err := strconv.ParseInt(params["id"], 10, 64)
 
 	if err != nil {
 		log.Fatalf("Error in ID parameter: %s", err.Error())
@@ -70,7 +77,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
-	idRequest, err := strconv.ParseInt(params["ID"], 10, 64)
+	idRequest, err := strconv.ParseInt(params["id"], 10, 64)
 
 	if err != nil {
 		log.Fatalf("Error in ID parameter: %s", err.Error())
