@@ -37,16 +37,9 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 
 func GetTaskById(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	reString, err := regexp.Compile(`[^\w]`)
+	idRequest, err := IdParameterTreatment(params["id"])
 	if err != nil {
-		log.Fatalf("Error in regex: %s", err.Error())
-	}
-	params["id"] = reString.ReplaceAllString(params["id"], "")
-
-	idRequest, err := strconv.ParseInt(params["id"], 10, 64)
-
-	if err != nil {
-		log.Fatalf("Error in ID parameter: %s", err.Error())
+		log.Fatalf("Error: %s", err.Error())
 		return
 	}
 	for _, item := range listTasks {
@@ -60,10 +53,9 @@ func GetTaskById(w http.ResponseWriter, r *http.Request) {
 
 func CreateTask(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	idRequest, err := strconv.ParseInt(params["id"], 10, 64)
-
+	idRequest, err := IdParameterTreatment(params["id"])
 	if err != nil {
-		log.Fatalf("Error in ID parameter: %s", err.Error())
+		log.Fatalf("Error: %s", err.Error())
 		return
 	}
 
@@ -76,13 +68,12 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-
-	idRequest, err := strconv.ParseInt(params["id"], 10, 64)
-
+	idRequest, err := IdParameterTreatment(params["id"])
 	if err != nil {
-		log.Fatalf("Error in ID parameter: %s", err.Error())
+		log.Fatalf("Error: %s", err.Error())
 		return
 	}
+
 	for index, item := range listTasks {
 		if item.ID == idRequest {
 			listTasks = append(listTasks[:index], listTasks[index+1:]...)
@@ -90,4 +81,20 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 		}
 		json.NewEncoder(w).Encode(listTasks)
 	}
+}
+
+func IdParameterTreatment(id string) (int64, error) {
+	regex, err := regexp.Compile(`[^\w]`)
+	if err != nil {
+		log.Println("Error in regex")
+		return 0, err
+	}
+	id = regex.ReplaceAllString(id, "")
+	idRequest, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		log.Println("Error in convertion string to int")
+		return 0, err
+	}
+
+	return idRequest, nil
 }
