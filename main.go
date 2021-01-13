@@ -24,9 +24,9 @@ func main() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/tasks", GetTasks).Methods("GET")
-	router.HandleFunc("task/{id}", GetTaskById).Methods("GET")
-	router.HandleFunc("task/{id}", CreateTask).Methods("POST")
-	router.HandleFunc("task/{id}", DeleteTask).Methods("DELETE")
+	router.HandleFunc("/task/{id}", GetTaskById).Methods("GET")
+	router.HandleFunc("/task/{id}", CreateTask).Methods("POST")
+	router.HandleFunc("/task/{id}", DeleteTask).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
 
